@@ -1,0 +1,58 @@
+{
+  "name": "fluent-http",
+  "version": "1.0.0",
+  "description": "Simple fluent API http client for browser",
+  "main": "./dist/fluent-http.js",
+  "license": "MIT",
+  "author": {
+    "name": "David Recuenco",
+    "url": "https://github.com/RecuencoJones"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/RecuencoJones/fluent-http"
+  },
+  "bugs": {
+    "url": "https://github.com/RecuencoJones/fluent-http/issues"
+  },
+  "engines": {
+    "node": ">= 7",
+    "npm": ">= 3"
+  },
+  "scripts": {
+    "start": "npm run build && http-server",
+    "build": "webpack",
+    "watch": "webpack -w",
+    "lint": "eslint webpack.config.js app/**/*.js test/**/*.js",
+    "test": "jest",
+    "test:coverage": "npm run test -- --coverage"
+  },
+  "dependencies": {
+    "lodash": "4.17.4"
+  },
+  "devDependencies": {
+    "babel-core": "6.26.0",
+    "babel-loader": "7.1.2",
+    "babel-preset-env": "1.6.0",
+    "eslint": "4.5.0",
+    "eslint-config-standard": "10.2.1",
+    "eslint-plugin-import": "2.7.0",
+    "eslint-plugin-node": "5.1.1",
+    "eslint-plugin-promise": "3.5.0",
+    "eslint-plugin-standard": "3.0.1",
+    "http-server": "0.10.0",
+    "jest": "20.0.4",
+    "webpack": "3.5.5",
+    "xhr-mock": "1.9.0"
+  },
+  "files": [
+    "dist",
+    "CHANGELOG.md",
+    "README.md"
+  ],
+  "keywords": [
+    "http",
+    "http-client",
+    "xhr"
+  ]
+}

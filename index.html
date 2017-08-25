@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Fluent Http Sample</title>
+  </head>
+  <body>
+    <button onclick="doRequest()">Perform request</button>
+    <script src="./dist/fluent-http.js"></script>
+    <script>
+      class SomeInterceptor extends fluentHttp.Interceptor {
+        onRequest(settings) {
+          console.log('Settings:', settings)
+          return settings
+        }
+        onSuccess(response) {
+          console.log('Success!', response)
+          return response
+        } 
+        onError(response) {
+          console.log('Error!', response)
+          return response
+        }
+      }
+
+      function doRequest() {
+        const client = new fluentHttp.Http()
+
+        client.withUrl('/')
+          .withInterceptor(new SomeInterceptor())
+          .request()
+          .then(() => {
+            console.log('Done!')
+          })
+          .catch(() => {
+            console.log('Error!')
+          })
+      }
+    </script>
+  </body>
+</html>
