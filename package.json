@@ -21,10 +21,13 @@
   },
   "scripts": {
     "start": "npm run build && http-server",
-    "build": "webpack",
-    "watch": "webpack -w",
+    "build": "npm run build:base && npm run build:min",
+    "build:base": "webpack",
+    "build:min": "cross-env NODE_ENV=production npm run build:base",
+    "watch": "npm run build:base -- -w",
     "lint": "eslint webpack.config.js app/**/*.js test/**/*.js",
     "test": "jest",
+    "test:mutations": "stryker run",
     "test:coverage": "npm run test -- --coverage"
   },
   "dependencies": {
@@ -34,6 +37,7 @@
     "babel-core": "6.26.0",
     "babel-loader": "7.1.2",
     "babel-preset-env": "1.6.0",
+    "cross-env": "5.0.5",
     "eslint": "4.5.0",
     "eslint-config-standard": "10.2.1",
     "eslint-plugin-import": "2.7.0",
@@ -41,7 +45,12 @@
     "eslint-plugin-promise": "3.5.0",
     "eslint-plugin-standard": "3.0.1",
     "http-server": "0.10.0",
-    "jest": "20.0.4",
+    "jest-cli": "20.0.4",
+    "stryker": "0.9.1",
+    "stryker-api": "0.8.0",
+    "stryker-html-reporter": "0.7.1",
+    "stryker-jest-runner": "0.1.0",
+    "uglifyjs-webpack-plugin": "0.4.6",
     "webpack": "3.5.5",
     "xhr-mock": "1.9.0"
   },

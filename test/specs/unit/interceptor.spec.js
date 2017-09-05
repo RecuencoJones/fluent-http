@@ -1,10 +1,10 @@
-const fluentHttp = require('../../../src')
+const { Interceptor } = require('../../../src/interceptor')
 
 describe('Interceptor default interface', () => {
   let interceptor
 
   beforeEach(() => {
-    interceptor = new fluentHttp.Interceptor()
+    interceptor = new Interceptor()
   })
 
   it('should return same settings onRequest', () => {

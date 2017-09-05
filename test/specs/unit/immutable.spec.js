@@ -1,14 +1,15 @@
-const fluentHttp = require('../../../src')
+const { Http } = require('../../../src/http')
+const { Interceptor } = require('../../../src/interceptor')
 
 describe('Immutable', () => {
   let source
 
   beforeEach(() => {
-    source = new fluentHttp.Http()
+    source = new Http()
   })
 
   it('should create a new instance 1', () => {
-    const dest = source.asGet()
+    const dest = source.asPost().asGet()
 
     expect(source).not.toBe(dest)
     expect(source).toHaveProperty('_method', 'GET')
@@ -74,7 +75,7 @@ describe('Immutable', () => {
   })
 
   it('should create a new instance 9', () => {
-    class SomeInterceptor extends fluentHttp.Interceptor {}
+    class SomeInterceptor extends Interceptor {}
 
     const interceptor = new SomeInterceptor()
     const dest = source.withInterceptor(interceptor)
@@ -85,7 +86,7 @@ describe('Immutable', () => {
   })
 
   it('should create a new instance 10', () => {
-    class SomeInterceptor extends fluentHttp.Interceptor {}
+    class SomeInterceptor extends Interceptor {}
 
     const interceptor1 = new SomeInterceptor()
     const interceptor2 = new SomeInterceptor()
