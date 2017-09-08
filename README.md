@@ -1,3 +1,4 @@
+[![npm version](https://badge.fury.io/js/fluent-http.svg)](https://www.npmjs.com/package/fluent-http)
 [![Build Status](https://api.travis-ci.org/RecuencoJones/fluent-http.svg?branch=develop)](https://travis-ci.org/RecuencoJones/fluent-http)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com)
 [![ncloc](https://sonarcloud.io/api/badges/measure?key=RecuencoJones.fluent-http%3Adevelop&metric=ncloc)](https://sonarcloud.io/dashboard?id=RecuencoJones.fluent-http%3Adevelop)
