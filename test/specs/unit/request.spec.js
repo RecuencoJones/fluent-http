@@ -1,11 +1,13 @@
 const mockXhr = require('xhr-mock')
-const fluentHttp = require('../../../src')
+const { Http } = require('../../../src/http')
+const { Body } = require('../../../src/body')
+const { Interceptor } = require('../../../src/interceptor')
 
 describe('Request', () => {
   let http
 
   beforeEach(() => {
-    http = new fluentHttp.Http()
+    http = new Http()
     mockXhr.setup().reset()
   })
 
@@ -82,7 +84,7 @@ describe('Request', () => {
 
     return http.withUrl('/api/create')
       .asPost()
-      .withData(fluentHttp.Body.asJson({
+      .withData(Body.asJson({
         foo: 'bar'
       }))
       .request()
@@ -101,7 +103,7 @@ describe('Request', () => {
 
     return http.withUrl('/api/create')
       .asPost()
-      .withData(fluentHttp.Body.asPlain('Hello'))
+      .withData(Body.asPlain('Hello'))
       .request()
       .then((response) => {
         expect(response.statusCode).toBe(200)
@@ -109,7 +111,7 @@ describe('Request', () => {
   })
 
   it('should perform a get request with auth interceptor', () => {
-    class BasicAuth extends fluentHttp.Interceptor {
+    class BasicAuth extends Interceptor {
       onRequest(s) {
         s.headers['Authorization'] = 'Basic foobar'
 
@@ -144,7 +146,7 @@ describe('Request', () => {
   })
 
   it('should perform a failed request with error interceptor', () => {
-    class ErrorInterceptor extends fluentHttp.Interceptor {
+    class ErrorInterceptor extends Interceptor {
       onError(r) {
         r.responseText = 'Foo'
 
@@ -173,6 +175,45 @@ describe('Request', () => {
       .request()
       .catch((response) => {
         expect(response.statusCode).toBe(408)
+      })
+  })
+
+  it('should succeed with 201', () => {
+    mockXhr.post('/api/create', (req, res) => {
+      return res.status(201)
+    })
+
+    return http.asPost()
+      .withUrl('/api/create')
+      .request()
+      .then((response) => {
+        expect(response.statusCode).toBe(201)
+      })
+  })
+
+  it('should error with 404', () => {
+    mockXhr.get('/api/retrieve', (req, res) => {
+      return res.status(404)
+    })
+
+    return http.asGet()
+      .withUrl('/api/retrieve')
+      .request()
+      .catch((response) => {
+        expect(response.statusCode).toBe(404)
+      })
+  })
+
+  it('should error with 101', () => {
+    mockXhr.get('/api/retrieve', (req, res) => {
+      return res.status(101)
+    })
+
+    return http.asGet()
+      .withUrl('/api/retrieve')
+      .request()
+      .catch((response) => {
+        expect(response.statusCode).toBe(101)
       })
   })
 })

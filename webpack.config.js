@@ -1,10 +1,25 @@
 const path = require('path')
+const webpack = require('webpack')
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 const pkg = require('./package.json')
+const plugins = []
+
+let name = pkg.name
+let devtool = 'inline-source-map'
+
+if (process.env.NODE_ENV === 'production') {
+  plugins.push(new UglifyJsPlugin())
+  plugins.push(new webpack.SourceMapDevToolPlugin({
+    filename: '[name].js.map'
+  }))
+  name = `${name}.min`
+  devtool = 'source-map'
+}
 
 module.exports = {
   entry: './src/index.js',
   output: {
-    filename: `${pkg.name}.js`,
+    filename: `${name}.js`,
     path: path.resolve('./dist'),
     libraryTarget: 'umd',
     library: 'fluentHttp'
@@ -25,5 +40,7 @@ module.exports = {
         }
       }
     ]
-  }
+  },
+  plugins,
+  devtool
 }

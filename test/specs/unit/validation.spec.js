@@ -1,10 +1,10 @@
-const fluentHttp = require('../../../src')
+const { Http } = require('../../../src/http')
 
 describe('Validation', () => {
   let source
 
   beforeEach(() => {
-    source = new fluentHttp.Http()
+    source = new Http()
   })
 
   it('should throw if URL is not a string', () => {
@@ -19,15 +19,39 @@ describe('Validation', () => {
     }).toThrow(TypeError)
   })
 
-  it('should throw if no data is passed as query param', () => {
+  it('should throw if no data is passed as query param 1', () => {
     expect(() => {
       source.withQueryParam()
     }).toThrow(TypeError)
   })
 
-  it('should throw if no data is passed as header', () => {
+  it('should throw if no data is passed as query param 2', () => {
+    expect(() => {
+      source.withQueryParam(3, 'value')
+    }).toThrow(TypeError)
+  })
+
+  it('should throw if no data is passed as query param 3', () => {
+    expect(() => {
+      source.withQueryParam('key')
+    }).toThrow(TypeError)
+  })
+
+  it('should throw if no data is passed as header 1', () => {
     expect(() => {
       source.withHeader()
+    }).toThrow(TypeError)
+  })
+
+  it('should throw if no data is passed as header 2', () => {
+    expect(() => {
+      source.withHeader(3, 'value')
+    }).toThrow(TypeError)
+  })
+
+  it('should throw if no data is passed as header 3', () => {
+    expect(() => {
+      source.withHeader('key')
     }).toThrow(TypeError)
   })
 
