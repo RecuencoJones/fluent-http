@@ -65,7 +65,7 @@ client.asPost()
 
 ### Tests
 
-- Mock package: [xhr-mock](https://www.npmjs.com/package/xhr-mock)
+- Mock package: [fetch-mock](https://www.npmjs.com/package/fetch-mock)
 
 ## Links of interest
 
