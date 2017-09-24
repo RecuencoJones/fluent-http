@@ -1,4 +1,4 @@
-const mockXhr = require('xhr-mock')
+const fetchMock = require('fetch-mock')
 const { Http } = require('../../../src/http')
 const { Body } = require('../../../src/body')
 const { Interceptor } = require('../../../src/interceptor')
@@ -7,27 +7,30 @@ describe('Request', () => {
   let http
 
   beforeEach(() => {
+    global.fetch = fetchMock.sandbox()
     http = new Http()
-    mockXhr.setup().reset()
   })
 
   afterEach(() => {
-    mockXhr.teardown()
+    fetch.reset()
+    fetch.restore()
   })
 
   it('should perform a get request', () => {
-    mockXhr.get('', (__, res) => res.status(200))
-
-    return http.request().then((response) => {
-      expect(response.statusCode).toBe(200)
+    fetch.get('/', {
+      status: 200
     })
+
+    return http.withUrl('/')
+      .request()
+      .then((response) => {
+        expect(response.statusCode).toBe(200)
+      })
   })
 
   it('should perform a get request with query params', () => {
-    mockXhr.get(/.*/, (req, res) => {
-      expect(req.query()).toEqual({foo: 'bar'})
-
-      return res.status(200)
+    fetch.get('/?foo=bar', {
+      status: 200
     })
 
     return http.withUrl('/')
@@ -39,11 +42,12 @@ describe('Request', () => {
   })
 
   it('should perform a post request with raw JSON data', () => {
-    mockXhr.post('/api/create', (req, res) => {
-      expect(req.header('Content-Type')).toBe('application/json')
-      expect(JSON.parse(req.body())).toEqual({foo: 'bar'})
-
-      return res.status(200)
+    fetch.post('/api/create', {
+      status: 200
+    }, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
     })
 
     return http.withUrl('/api/create')
@@ -54,15 +58,20 @@ describe('Request', () => {
       .request()
       .then((response) => {
         expect(response.statusCode).toBe(200)
+        expect(fetch.lastOptions()).toHaveProperty('body', JSON.stringify({
+          foo: 'bar'
+        }))
       })
   })
 
   it('should perform a post request with raw plain data', () => {
-    mockXhr.post('/api/create', (req, res) => {
-      expect(req.header('Content-Type')).toBe('text/plain')
-      expect(req.body()).toEqual('Hello')
-
-      return res.status(200)
+    // TODO: match body
+    fetch.post('/api/create', {
+      status: 200
+    }, {
+      headers: {
+        'Content-Type': 'text/plain'
+      }
     })
 
     return http.withUrl('/api/create')
@@ -71,15 +80,17 @@ describe('Request', () => {
       .request()
       .then((response) => {
         expect(response.statusCode).toBe(200)
+        expect(fetch.lastOptions()).toHaveProperty('body', 'Hello')
       })
   })
 
   it('should perform a post request with Body JSON data', () => {
-    mockXhr.post('/api/create', (req, res) => {
-      expect(req.header('Content-Type')).toBe('application/json')
-      expect(JSON.parse(req.body())).toEqual({foo: 'bar'})
-
-      return res.status(200)
+    fetch.post('/api/create', {
+      status: 200
+    }, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
     })
 
     return http.withUrl('/api/create')
@@ -90,15 +101,19 @@ describe('Request', () => {
       .request()
       .then((response) => {
         expect(response.statusCode).toBe(200)
+        expect(fetch.lastOptions()).toHaveProperty('body', JSON.stringify({
+          foo: 'bar'
+        }))
       })
   })
 
   it('should perform a post request with raw plain data', () => {
-    mockXhr.post('/api/create', (req, res) => {
-      expect(req.header('Content-Type')).toBe('text/plain')
-      expect(req.body()).toEqual('Hello')
-
-      return res.status(200)
+    fetch.post('/api/create', {
+      status: 200
+    }, {
+      headers: {
+        'Content-Type': 'text/plain'
+      }
     })
 
     return http.withUrl('/api/create')
@@ -107,6 +122,26 @@ describe('Request', () => {
       .request()
       .then((response) => {
         expect(response.statusCode).toBe(200)
+        expect(fetch.lastOptions()).toHaveProperty('body', 'Hello')
+      })
+  })
+
+  it('should perform a get request and parse JSON data', () => {
+    fetch.get('/', {
+      body: JSON.stringify({
+        foo: 'bar'
+      }),
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8'
+      },
+      status: 200
+    })
+
+    return http.withUrl('/')
+      .request()
+      .then((response) => {
+        expect(response.statusCode).toBe(200)
+        expect(response.data).toEqual({foo: 'bar'})
       })
   })
 
@@ -119,10 +154,12 @@ describe('Request', () => {
       }
     }
 
-    mockXhr.get('/api/secure', (req, res) => {
-      expect(req.header('Authorization')).toBe('Basic foobar')
-
-      return res.status(200)
+    fetch.get('/api/secure', {
+      status: 200
+    }, {
+      headers: {
+        Authorization: 'Basic foobar'
+      }
     })
 
     return http.withUrl('/api/secure')
@@ -134,8 +171,8 @@ describe('Request', () => {
   })
 
   it('should perform a failed request', () => {
-    mockXhr.get('/api/error', (req, res) => {
-      return res.status(400)
+    fetch.get('/api/error', {
+      status: 400
     })
 
     return http.withUrl('/api/error')
@@ -154,8 +191,8 @@ describe('Request', () => {
       }
     }
 
-    mockXhr.get('/api/error', (req, res) => {
-      return res.status(400)
+    fetch.get('/api/error', {
+      status: 400
     })
 
     return http.withUrl('/api/error')
@@ -167,8 +204,8 @@ describe('Request', () => {
   })
 
   it('should perform a timeout request', () => {
-    mockXhr.get('/api/timeout', (req, res) => {
-      return res.timeout(true)
+    fetch.get('/api/timeout', {
+      status: 408
     })
 
     return http.withUrl('/api/timeout')
@@ -179,8 +216,8 @@ describe('Request', () => {
   })
 
   it('should succeed with 201', () => {
-    mockXhr.post('/api/create', (req, res) => {
-      return res.status(201)
+    fetch.post('/api/create', {
+      status: 201
     })
 
     return http.asPost()
@@ -192,8 +229,8 @@ describe('Request', () => {
   })
 
   it('should error with 404', () => {
-    mockXhr.get('/api/retrieve', (req, res) => {
-      return res.status(404)
+    fetch.get('/api/retrieve', {
+      status: 404
     })
 
     return http.asGet()
@@ -201,19 +238,6 @@ describe('Request', () => {
       .request()
       .catch((response) => {
         expect(response.statusCode).toBe(404)
-      })
-  })
-
-  it('should error with 101', () => {
-    mockXhr.get('/api/retrieve', (req, res) => {
-      return res.status(101)
-    })
-
-    return http.asGet()
-      .withUrl('/api/retrieve')
-      .request()
-      .catch((response) => {
-        expect(response.statusCode).toBe(101)
       })
   })
 })
